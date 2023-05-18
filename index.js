@@ -50,7 +50,7 @@ app.get('/bookings',async(req,res)=>{
   if(req.query?.email){
     query ={email: req.query.email}
   }
-  const cursor = bookingCollection.find()
+  const cursor = bookingCollection.find(query)
   const result = await cursor.toArray()
   res.send(result)
 })
@@ -58,6 +58,27 @@ app.get('/bookings',async(req,res)=>{
 app.post('/bookings',async(req,res)=>{
   const booking =req.body;
   const result =await bookingCollection.insertOne(booking)
+  res.send(result)
+})
+//delete the bookings 
+app.delete('/bookings/:id',async(req,res)=>{
+  const id =req.params.id;
+  const query ={_id : new ObjectId(id)}
+  const result = await bookingCollection.deleteOne(query)
+  res.send(result)
+})
+// Confirm update status
+app.patch('/bookings/:id',async(req,res)=>{
+  const id =req.params.id;
+  const bookingsData =req.body;
+  console.log(bookingsData)
+  const filter = {_id : new ObjectId(id)}
+  const updateDoc = {
+    $set: {
+      status:bookingsData.status
+    },
+  };
+  const result = await bookingCollection.updateOne(filter,updateDoc)
   res.send(result)
 })
 
